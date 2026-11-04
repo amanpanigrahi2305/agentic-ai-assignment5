@@ -1,0 +1,66 @@
+#!/usr/bin/env python3
+"""Roll back one run's writes, newest first (Part C, task 3; checks/FORMATS.md, 13.6 and 13.10).
+
+    bin/rollback <run_id>          # one line per write: what offset it, or none
+    bin/rollback <run_id> --json   # also the summary reports/LAB_05.json's rollback takes
+
+Only what someone wrote a compensation for can be offset, through the mock remote's
+three endpoints, which the model cannot call: remove_label for a label, close_pr for
+a pull request, reopen_issue for a closed issue. A comment, a push and a merge have
+none: they are printed "none" and left in place. A comment once read cannot be taken
+back; that is the policy's work, before the write.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from harness.tracker import RemoteRefused, Tracker  # noqa: E402
+
+HAPPENED = ("written", "timeout_after_commit")
+COMPENSATE = {"apply_label": ("label", "remove_label"), "open_pr": ("pr", "close_pr"),
+              "close_issue": ("close", "reopen_issue")}
+OFFSETS = ("remove_label", "close_pr", "reopen_issue")
+
+
+def main(argv=None) -> int:
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("run_id")
+    p.add_argument("--json", action="store_true", help="end with one JSON line: run_id, compensated, none")
+    a = p.parse_args(argv)
+    remote = Tracker()
+    writes = [w for w in remote.log(a.run_id) if w["outcome"] in HAPPENED and w["action"] not in OFFSETS]
+    if not writes:
+        print(f"{a.run_id} made no write the remote holds; nothing to roll back")
+    compensated, none = [], []
+    for w in reversed(writes):                          # newest first
+        action, target = w["action"], w["target"]
+        if action not in COMPENSATE:
+            print(f"none          {action:<13} {target}: no compensating action exists; left in place")
+            none.append({"action": action, "target": target})
+            continue
+        kind, endpoint = COMPENSATE[action]
+        row = remote.by_key(a.run_id, kind, w["key"])
+        try:
+            if row is None:
+                raise RemoteRefused(f"no {kind} with key {w['key']}")
+            getattr(remote, endpoint)(a.run_id, row["id"])
+        except RemoteRefused as exc:
+            print(f"none          {action:<13} {target}: {exc}")
+            none.append({"action": action, "target": target})
+            continue
+        print(f"{endpoint:<13} {action:<13} {target}")
+        compensated.append({"action": action, "target": target, "by": endpoint})
+    if a.json:
+        print(json.dumps({"run_id": a.run_id, "compensated": compensated, "none": none}))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

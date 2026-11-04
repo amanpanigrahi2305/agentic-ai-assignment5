@@ -1,0 +1,91 @@
+#!/usr/bin/env python3
+"""Replay a recorded day of RepoMind's traffic through the autonomy policy.
+
+    bin/replay_policy fixtures/rollup_2026-08-04.jsonl            # a table per column, by action class
+    bin/replay_policy fixtures/rollup_2026-08-04.jsonl --json     # one JSON object (checks/FORMATS.md, 13.10)
+    bin/replay_policy fixtures/rollup_2026-08-04.jsonl --batched  # prompts per day with one plan review per run
+
+Every line is placed by policy.placement.place, the function the hook itself calls,
+from the line's action and its facts. Each call the policy gates is one prompt; the
+reviewer's budget is ten minutes a day, so each prompt gets 600 / prompts seconds.
+
+--batched puts one plan review in place (Part B, task 5): asked once per run, after
+the comment's draft has passed the second pass and before the run's first write,
+and only on a run with a covered call ahead of it. It covers every call of the
+classes in COVERS in that run; any other gated call still asks on its own.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from collections import Counter, defaultdict
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from harness.formats import COLUMNS  # noqa: E402
+from policy.placement import place  # noqa: E402
+
+BUDGET_S = 600
+COVERS = ["open_pr/into_develop", "post_comment/human_active", "post_comment/human_quiet"]
+
+
+def replay(lines: list[dict]) -> tuple[dict[str, Counter], list[tuple[str, str]]]:
+    """{column: Counter(action_class)}, and every gated call as (run_id, action_class)."""
+    placed = {c: Counter() for c in COLUMNS}
+    gated = []
+    for line in lines:
+        klass, column = place(line["action"], line.get("facts") or {})
+        placed[column][klass] += 1
+        if column == "requires_approval":
+            gated.append((line.get("run_id"), klass))
+    return placed, gated
+
+
+def batched_prompts(gated: list[tuple[str, str]]) -> int:
+    """One plan review per run with a covered call, plus every gated call it does not cover."""
+    runs = defaultdict(list)
+    for run_id, klass in gated:
+        runs[run_id].append(klass)
+    reviews = sum(1 for classes in runs.values() if any(k in COVERS for k in classes))
+    alone = sum(1 for _, klass in gated if klass not in COVERS)
+    return reviews + alone
+
+
+def main(argv=None) -> int:
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("file")
+    p.add_argument("--json", action="store_true", help="print one JSON object, nothing else")
+    p.add_argument("--batched", action="store_true", help="count prompts with one plan review per run")
+    a = p.parse_args(argv)
+    lines = [json.loads(x) for x in Path(a.file).read_text().splitlines() if x.strip()]
+    placed, gated = replay(lines)
+    prompts = batched_prompts(gated) if a.batched else len(gated)
+    out = {c: dict(sorted(placed[c].items())) for c in COLUMNS}
+    out["prompts_per_day"] = prompts
+    out["seconds_per_prompt"] = round(BUDGET_S / prompts, 1) if prompts else None
+    if a.batched:
+        out["covers"] = COVERS
+        out["prompts_per_day_before"] = len(gated)
+    if a.json:
+        print(json.dumps(out))
+        return 0
+    print(f"{len(lines)} calls over {len({x.get('run_id') for x in lines})} runs, placed by policy/placement.py\n")
+    for column in COLUMNS:
+        print(f"{column}: {sum(placed[column].values())}")
+        for klass, n in sorted(placed[column].items(), key=lambda kv: (-kv[1], kv[0])):
+            print(f"  {klass:<32} {n:>4}")
+    print(f"\nprompts per day: {len(gated)}  (each call the policy gates is one prompt)")
+    if len(gated):
+        print(f"seconds per prompt: {BUDGET_S} / {len(gated)} = {BUDGET_S / len(gated):.1f}")
+    if a.batched:
+        print(f"\nwith one plan review per run, covering {', '.join(COVERS)}:")
+        print(f"prompts per day: {prompts}" + (f"; seconds per prompt: {BUDGET_S / prompts:.1f}" if prompts else ""))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

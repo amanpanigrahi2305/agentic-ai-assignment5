@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4335-s01-26f83e",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4335",
+  "branch": "repomind/issue-4335",
+  "title": "Translate column headings in ReportTable for French locale",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4335,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4335",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "f13a8d16df25",
+ "asked_at": "2026-11-04T01:52:49.362Z"
+}

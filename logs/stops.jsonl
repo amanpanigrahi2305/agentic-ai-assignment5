@@ -1,0 +1,31 @@
+{"at": "2026-11-04T06:53:36.869Z", "run_id": "planned-4191-s01-93867d", "event": "requested"}
+{"at": "2026-11-04T18:56:41.512Z", "run_id": "planned-4191-s01-4b6999", "event": "requested"}
+{"at": "2026-11-04T18:57:03.867Z", "run_id": "planned-4191-s01-4b6999", "event": "effective", "action": "read_file"}
+{"at": "2026-11-04T18:57:46.106Z", "run_id": "planned-4192-s01-780190", "event": "requested"}
+{"at": "2026-11-04T18:58:14.152Z", "run_id": "planned-4192-s01-780190", "event": "effective", "action": "read_issue"}
+{"at": "2026-11-04T18:58:43.600Z", "run_id": "planned-4191-s02-bbd5f3", "event": "requested"}
+{"at": "2026-11-04T18:59:51.143Z", "run_id": "planned-4191-s02-bbd5f3", "event": "effective", "action": "read_file"}
+{"at": "2026-11-04T19:00:06.066Z", "run_id": "planned-4192-s02-a970c2", "event": "requested"}
+{"at": "2026-11-04T19:00:12.903Z", "run_id": "planned-4192-s02-a970c2", "event": "effective", "action": "read_issue"}
+{"at": "2026-11-04T19:00:58.497Z", "run_id": "planned-4191-s03-c93b32", "event": "requested"}
+{"at": "2026-11-04T19:01:10.026Z", "run_id": "planned-4191-s03-c93b32", "event": "effective", "action": "read_file"}
+{"at": "2026-11-04T19:01:55.885Z", "run_id": "planned-4192-s03-27f95a", "event": "requested"}
+{"at": "2026-11-04T19:02:31.507Z", "run_id": "planned-4192-s03-27f95a", "event": "effective", "action": "read_file"}
+{"at": "2026-11-04T19:03:04.281Z", "run_id": "planned-4191-s04-943030", "event": "requested"}
+{"at": "2026-11-04T19:03:17.073Z", "run_id": "planned-4191-s04-943030", "event": "effective", "action": "read_issue"}
+{"at": "2026-11-04T19:04:28.301Z", "run_id": "planned-4192-s04-88f891", "event": "requested"}
+{"at": "2026-11-04T19:04:35.954Z", "run_id": "planned-4192-s04-88f891", "event": "effective", "action": "read_issue"}
+{"at": "2026-11-04T19:05:14.261Z", "run_id": "planned-4191-s05-e761f3", "event": "requested"}
+{"at": "2026-11-04T19:05:43.215Z", "run_id": "planned-4191-s05-e761f3", "event": "effective", "action": "read_issue"}
+{"at": "2026-11-04T19:06:23.285Z", "run_id": "planned-4192-s05-990257", "event": "requested"}
+{"at": "2026-11-04T19:06:24.229Z", "run_id": "planned-4192-s05-990257", "event": "effective", "action": "search_repo"}
+{"at": "2026-11-04T19:33:58.877Z", "run_id": "planned-4191-s01-4b6999", "event": "lifted"}
+{"at": "2026-11-04T19:34:10.108Z", "run_id": "planned-4192-s01-780190", "event": "lifted"}
+{"at": "2026-11-04T19:35:20.254Z", "run_id": "planned-4191-s02-bbd5f3", "event": "lifted"}
+{"at": "2026-11-04T19:35:33.268Z", "run_id": "planned-4192-s02-a970c2", "event": "lifted"}
+{"at": "2026-11-04T19:36:47.598Z", "run_id": "planned-4191-s03-c93b32", "event": "lifted"}
+{"at": "2026-11-04T19:36:58.033Z", "run_id": "planned-4192-s03-27f95a", "event": "lifted"}
+{"at": "2026-11-04T19:37:13.573Z", "run_id": "planned-4191-s04-943030", "event": "lifted"}
+{"at": "2026-11-04T19:37:27.280Z", "run_id": "planned-4192-s04-88f891", "event": "lifted"}
+{"at": "2026-11-04T19:38:46.369Z", "run_id": "planned-4191-s05-e761f3", "event": "lifted"}
+{"at": "2026-11-04T19:38:57.354Z", "run_id": "planned-4192-s05-990257", "event": "lifted"}

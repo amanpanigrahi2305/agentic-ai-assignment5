@@ -21,7 +21,8 @@ Every call goes through call(), in this order:
      call never runs, and its error names each field and the fix.
   3. The hooks (Assignment 3, Part C, task 5; your autonomy policy, Assignment 5): each hook(name, args) runs before the tool; it
      allows by returning None, and denies by returning anything else or raising.
-     Fail closed: a hook that raises denies.
+     Fail closed: a hook that raises denies. Assignment 5's policy/hook.py is the
+     second hook: the autonomy policy, the stop, the boundary and the disclosure.
   4. The tool. A read runs once. A write (WRITES) gets a key and the three exits:
      check before every attempt whether the effect already exists; on a timeout,
      read the write back (VERIFY=on): there, proceed; not there, retry with the
@@ -140,8 +141,10 @@ def load_definition(module: str) -> dict:
 
 class ToolRegistry:
     def __init__(self, ctx: RunContext, modules=MODULES):
+        from policy.hook import PolicyHook
         self.ctx = ctx
-        self.hooks: list = [allow_all]
+        self.hooks: list = [allow_all, PolicyHook(self)]   # Assignment 5: the autonomy policy, before every call
+        self.halt: tuple[str, str] | None = None   # set by the policy hook when the run must end: held or stopped
         self.protocol_errors = 0
         self._tools: dict[str, tuple[str, dict, object]] = {}
         for module in modules:

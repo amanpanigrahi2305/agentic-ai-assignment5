@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4337-s01-71b1b4",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4337",
+  "branch": "repomind/issue-4337",
+  "title": "Add Spanish locale support and translation catalog",
+  "body": "File: src/i18n/index.ts\n\n1. Extend the `LOCALES` array to include \"es\" for Spanish.\n2. Update the `catalogs` object to import and include a Spanish translation catalog (`es.json`).\n3. Ensure the `isLocale` function recognizes \"es\" as a valid locale.\n4. Add a Spanish translation file (`es.json`) in the same directory as the existing language files, containing the translated strings for the application and emails.\n\nThis change enables Spanish as a supported language for users in Mexico and Spain, aligning with the request in issue-4337."
+ },
+ "facts": {
+  "issue": 4337,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4337",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "2d21d545e3b5",
+ "asked_at": "2026-11-04T01:54:32.129Z"
+}

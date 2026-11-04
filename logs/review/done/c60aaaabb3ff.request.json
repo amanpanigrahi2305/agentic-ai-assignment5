@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4327-s01-0ce7ef",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4327",
+  "branch": "repomind/issue-4327",
+  "title": "Fix duplicated report to retain its schedule",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4327,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4327",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "c60aaaabb3ff",
+ "asked_at": "2026-11-04T01:42:53.347Z"
+}

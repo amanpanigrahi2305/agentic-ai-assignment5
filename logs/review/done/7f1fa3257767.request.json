@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4306-s01-08232b",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4306",
+  "branch": "repomind/issue-4306",
+  "title": "Fix upload failure to show row number after file correction",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4306,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": 42.5,
+  "label": null,
+  "branch": "repomind/issue-4306",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "7f1fa3257767",
+ "asked_at": "2026-11-04T01:10:08.501Z"
+}

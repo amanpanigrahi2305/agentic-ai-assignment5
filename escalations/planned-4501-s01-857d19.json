@@ -1,0 +1,7 @@
+{
+ "attempted": "step 7, push the fix to the pull request's branch: push_commit with {\"branch\": \"repomind/issue-4501\", \"files\": [\"src/export/csv.ts\"], \"message\": \"Fix for issue 4501\"}",
+ "why_stopped": "this run's own run_tests on repomind/issue-4501 (step 6) failed 1 test(s): toDelimited > puts date first (3.2.0 column order)",
+ "needs_from_human": "Push the change anyway (approve), or leave the branch as it is for a person to revise the change (deny)",
+ "signal": "failed_verification",
+ "at": "2026-11-04T22:03:33.013Z"
+}

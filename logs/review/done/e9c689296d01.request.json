@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4321-s01-f34092",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4321",
+  "branch": "repomind/issue-4321",
+  "title": "Fix missing French translations for export button and messages",
+  "body": "File: src/components/report/ReportPage.tsx\n\nThe export button and related messages ('Export', 'Exporting...', 'Export downloaded') display English text instead of French translations on French-language pages. These strings should be replaced with their French equivalents from the translation catalog to ensure consistency with the locale."
+ },
+ "facts": {
+  "issue": 4321,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4321",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "e9c689296d01",
+ "asked_at": "2026-11-04T01:33:26.583Z"
+}

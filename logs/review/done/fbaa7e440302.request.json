@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4320-s01-ad9972",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4320",
+  "branch": "repomind/issue-4320",
+  "title": "Add configurable send time for scheduled exports in report owner's time zone",
+  "body": "File: src/export/scheduler.ts\n\nIntroduce a `sendHourLocal` field in the `Report` schema to allow report owners to specify the hour (in their local time zone) when their scheduled exports should be sent. Modify the `nextRunAt` function to convert this local hour to UTC based on the report owner's time zone, using the time zone stored in the report metadata. This ensures scheduled exports are sent at a time that aligns with the report owner's working hours, addressing the need to include overnight transactions from the West Coast."
+ },
+ "facts": {
+  "issue": 4320,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": 51.1,
+  "label": null,
+  "branch": "repomind/issue-4320",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "fbaa7e440302",
+ "asked_at": "2026-11-04T01:30:46.463Z"
+}

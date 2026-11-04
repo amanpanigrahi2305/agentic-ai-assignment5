@@ -1,0 +1,1 @@
+{"run_id": "planned-4303-s01-1191f0", "effect": "deny", "path": "src/db/**", "stated_at": "2026-11-04T21:36:31.834Z", "message": "BOUNDARY: deny path=src/db/**"}

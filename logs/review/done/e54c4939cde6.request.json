@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4319-s01-26e6fd",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4319",
+  "branch": "repomind/issue-4319",
+  "title": "Trim whitespace from currency codes before validation",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4319,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4319",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "e54c4939cde6",
+ "asked_at": "2026-11-04T01:28:22.128Z"
+}

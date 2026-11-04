@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4329-s01-f4b50e",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4329",
+  "branch": "repomind/issue-4329",
+  "title": "Fix import failure for CSV rows with multi-line quoted descriptions",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4329,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": 27.5,
+  "label": null,
+  "branch": "repomind/issue-4329",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "7d82f71ec84a",
+ "asked_at": "2026-11-04T01:45:42.472Z"
+}

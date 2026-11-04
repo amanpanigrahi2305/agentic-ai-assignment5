@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4314-s01-1bff4a",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4314",
+  "branch": "repomind/issue-4314",
+  "title": "Add totals row for each currency in XLSX exports",
+  "body": "File: src/export/\n\nThe XLSX export should include a totals row at the bottom of the exported file, summarizing the total amount for each currency present in the report. This will save time for accountants who manually add these sums after export. The CSV export should remain unchanged, as the loaders already handle totals correctly."
+ },
+ "facts": {
+  "issue": 4314,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4314",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "6f3c4d1337da",
+ "asked_at": "2026-11-04T01:21:36.288Z"
+}

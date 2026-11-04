@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4325-s01-592c76",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4325",
+  "branch": "repomind/issue-4325",
+  "title": "Fix 'Forgot password' to avoid exposing registered accounts during mail outages",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4325,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": 15.0,
+  "label": null,
+  "branch": "repomind/issue-4325",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "866d71325422",
+ "asked_at": "2026-11-04T01:40:58.285Z"
+}

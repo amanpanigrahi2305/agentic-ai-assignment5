@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4317-s01-d1877e",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4317",
+  "branch": "repomind/issue-4317",
+  "title": "Clarify date parsing for MM/DD/YYYY format in US card exports",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4317,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4317",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "df7e6277d177",
+ "asked_at": "2026-11-04T01:23:07.453Z"
+}

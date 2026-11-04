@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4304-s01-eec60c",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4304",
+  "branch": "repomind/issue-4304",
+  "title": "Fix hourly purge of failed uploads by handling AccessDenied errors gracefully",
+  "body": "File: src/ingest/worker.ts\n\nThe hourly purge of failed uploads (`purgeExpiredFailedUploads`) is failing every hour due to an `AccessDenied` error on a specific object key. The error is caught and logged as `failed upload purge failed`, but the function exits early, preventing the purge of other expired uploads. This causes 1,318 failed uploads older than seven days to remain in storage.\n\nThe fix should:\n1. Skip the specific key causing the `AccessDenied` error and continue purging other expired uploads.\n2. Log the skipped key for debugging purposes.\n3. Ensure the purge completes for all other expired uploads, maintaining the expected behavior of deleting failed uploads after seven days."
+ },
+ "facts": {
+  "issue": 4304,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4304",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "fcd8b2382a2a",
+ "asked_at": "2026-11-04T01:01:28.855Z"
+}

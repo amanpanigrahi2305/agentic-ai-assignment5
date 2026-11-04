@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4310-s01-a99dc9",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4310",
+  "branch": "repomind/issue-4310",
+  "title": "Add account ownership check for report creation and updates",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4310,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4310",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "353b2acd7e5c",
+ "asked_at": "2026-11-04T01:14:16.103Z"
+}

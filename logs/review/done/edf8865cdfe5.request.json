@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4313-s01-346b2a",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4313",
+  "branch": "repomind/issue-4313",
+  "title": "Ensure jobs in 'running' status are marked as 'failed' when workers crash during redeployment",
+  "body": "File: src/ingest/queue.ts\n\nThe issue describes six import jobs stuck in the `running` status after a redeployment, with no worker processing them. The `claimNext` function sets the job status to `running` and updates the upload status to `importing`, but there is no mechanism to transition a job out of `running` if the worker process crashes or fails to complete the job. This results in orphaned jobs that remain in `running` indefinitely and incorrectly contribute to the queue depth.\n\nTo fix this, a cleanup mechanism should be introduced to detect and mark jobs in `running` status as `failed` if they exceed a reasonable timeout (e.g., 5 hours). This can be implemented as a scheduled task or a health check that scans for stale `running` jobs and updates their status accordingly. The `failJob` function already handles the logic for updating both the job and upload statuses to `failed`, so this mechanism can reuse that logic."
+ },
+ "facts": {
+  "issue": 4313,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4313",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "edf8865cdfe5",
+ "asked_at": "2026-11-04T01:18:19.197Z"
+}

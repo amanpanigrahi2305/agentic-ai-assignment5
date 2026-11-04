@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4340-s01-009e1b",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4340",
+  "branch": "repomind/issue-4340",
+  "title": "Clarify upload size limits in documentation",
+  "body": "File: none\n\nThe issue asks about the largest file size that can be uploaded, but there is no explicit documentation or code enforcing a limit. The request is for guidance on whether the limit can be raised for their account. Since this is a question about documentation or account-specific limits, no code change is needed, but the documentation should be updated to address upload size constraints or clarify how to request adjustments."
+ },
+ "facts": {
+  "issue": 4340,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4340",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "19d782173acb",
+ "asked_at": "2026-11-04T02:01:16.655Z"
+}

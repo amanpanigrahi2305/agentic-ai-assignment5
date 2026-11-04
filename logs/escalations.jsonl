@@ -1,0 +1,2 @@
+{"at": "2026-11-03T20:24:43.014Z", "event": "asked", "run_id": "planned-4501-s01-8796cd", "signal": "failed_verification", "step": 7, "packet": "escalations/planned-4501-s01-8796cd.json"}
+{"at": "2026-11-04T22:03:33.014Z", "event": "asked", "run_id": "planned-4501-s01-857d19", "signal": "failed_verification", "step": 7, "packet": "escalations/planned-4501-s01-857d19.json"}

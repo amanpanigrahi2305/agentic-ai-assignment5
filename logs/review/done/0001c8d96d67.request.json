@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4333-s01-a34027",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4333",
+  "branch": "repomind/issue-4333",
+  "title": "Update GET /uploads/:id API reference to include missing fields",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4333,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4333",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "0001c8d96d67",
+ "asked_at": "2026-11-04T01:51:08.401Z"
+}

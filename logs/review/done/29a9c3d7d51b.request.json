@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4303-s01-15e2da",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4303",
+  "branch": "repomind/issue-4303",
+  "title": "Clarify or remove the 100k-row limit in export error message",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4303,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4303",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "29a9c3d7d51b",
+ "asked_at": "2026-11-04T01:01:06.270Z"
+}

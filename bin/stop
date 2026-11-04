@@ -1,0 +1,43 @@
+#!/usr/bin/env python3
+"""Stop a live RepoMind run (Part C, task 2; checks/FORMATS.md, section 13.10).
+
+    bin/stop <run_id>            # the run_id its "live" notification gave
+    bin/stop --lift <run_id>     # lift a stop by hand (python run.py --resume <run_id> lifts it too)
+
+The stop is a line in logs/stops.jsonl, outside the agent. The policy hook reads it
+before every call: from then on it refuses every call of the run, the first refusal
+writes the `effective` line, and the run saves a checkpoint and ends `stopped`. A
+stop that arrives while the run waits for a person withdraws the request. The call
+already running when the stop arrives finishes, and is recorded.
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT))
+
+from policy import stops  # noqa: E402
+
+
+def main(argv=None) -> int:
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("run_id")
+    p.add_argument("--lift", action="store_true", help="lift the run's stop instead")
+    a = p.parse_args(argv)
+    if not (ROOT / "runs" / f"{a.run_id}.jsonl").exists():
+        print(f"warning: no trace runs/{a.run_id}.jsonl; recording the stop anyway", file=sys.stderr)
+    if a.lift:
+        print(f"lifted the stop on {a.run_id}" if stops.lift(a.run_id) else f"{a.run_id} is not stopped")
+        return 0
+    line = stops.write(a.run_id, "requested")
+    print(f"stop requested for {a.run_id} at {line['at']}: its next call is refused, and it ends stopped. "
+          f"Resume it with: python run.py --resume {a.run_id}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

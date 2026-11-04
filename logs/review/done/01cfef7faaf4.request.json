@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4331-s01-57dedd",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4331",
+  "branch": "repomind/issue-4331",
+  "title": "Neutralise CSV formulas by prefixing text values with a space",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4331,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4331",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "01cfef7faaf4",
+ "asked_at": "2026-11-04T01:47:38.009Z"
+}

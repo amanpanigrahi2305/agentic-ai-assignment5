@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4318-s01-35cc89",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4318",
+  "branch": "repomind/issue-4318",
+  "title": "Accept application/octet-stream for .csv files in uploads",
+  "body": "File: src/routes/uploads.ts\n\nThe upload endpoint currently rejects files with `application/octet-stream` content type, even if the file extension is `.csv`. This causes failures for scripts using `curl -F file=@statement.csv`, which sends `application/octet-stream` for unknown extensions. The fix should allow `.csv` files with this content type, matching the behavior of the web form upload."
+ },
+ "facts": {
+  "issue": 4318,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4318",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "bf3e54d22ab7",
+ "asked_at": "2026-11-04T01:24:10.611Z"
+}

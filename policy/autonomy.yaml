@@ -1,0 +1,42 @@
+# RepoMind's autonomy policy (Lecture 5, slide 51; checks/FORMATS.md, section 13.1).
+#
+# Enforced by policy/hook.py, before every tool call, outside the context window.
+# The model never sees this file. Every placement is argued from the ranking in
+# reports/LAB_05.md, Part A: undo path, whether anyone would notice, blast radius.
+
+independent:          # runs on its own
+  - read_issue
+  - search_repo
+  - read_file
+  - run_tests
+  - apply_label
+  - post_comment/agent_opened
+
+requires_approval:    # waits for the reviewer; no answer is never a yes
+  - post_comment/human_active
+  - post_comment/human_quiet
+  - open_pr/into_develop
+  - push_commit/own_branch
+
+prohibited:           # never runs, whoever answers, approve-all included
+  - merge_pr
+  - push_commit/protected
+  - push_commit/other_branch
+  - open_pr/into_protected
+  - close_issue                 # the task never closes: the nearest the policy gets to removing the tool
+
+classes:              # what decides each circumstance, from the harness's facts (13.2)
+  post_comment/human_active: a person commented on the thread within the last 60 minutes (minutes_since_human_comment <= 60), whoever opened it
+  post_comment/agent_opened: RepoMind opened the issue (issue_opened_by_agent) and no person has ever commented on it (minutes_since_human_comment is null)
+  post_comment/human_quiet: a person opened the issue, or a person has joined RepoMind's own thread, and nobody commented within the hour
+  open_pr/into_develop: the pull request's base is develop, an unprotected branch
+  open_pr/into_protected: the pull request's base, or its head branch, is protected (main)
+  push_commit/protected: the branch is protected (branch_protected, main)
+  push_commit/own_branch: the branch is unprotected and is the head of a pull request this run opened (target_created_by_agent)
+  push_commit/other_branch: the branch is unprotected and no PR of this run uses it (develop above all; an earlier run's repomind/issue-<n> branch too), or no branch is named
+
+escalate:             # Part C: named signals, set by the harness, checked before an action that cannot be undone
+  - before a push or a merge, when this run's own run_tests failed (failed_verification)
+  - before a comment, when the draft's file contradicts a confirmed record in the store (memory_contradiction)
+  - before a push, when a run_tests result cannot be read, or a write cannot be confirmed (uninterpretable_result)
+  - when one plan step has been refused three times (blocked_three_times)

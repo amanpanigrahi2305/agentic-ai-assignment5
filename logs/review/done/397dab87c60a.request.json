@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4336-s01-b03b4f",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4336",
+  "branch": "repomind/issue-4336",
+  "title": "Fix double hyphen in export filenames before the date",
+  "body": "File: $fill\n\nThe issue describes export filenames with a double hyphen (e.g., `--2026-10-21.xlsx`) due to truncation logic that leaves a hyphen when cutting long report names to 60 characters. The fix should ensure that only a single hyphen is added before the date, even if the truncation occurs after a space or comma."
+ },
+ "facts": {
+  "issue": 4336,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4336",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "397dab87c60a",
+ "asked_at": "2026-11-04T01:54:26.838Z"
+}

@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4328-s01-e03621",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4328",
+  "branch": "repomind/issue-4328",
+  "title": "Fix shutdown timeout by closing idle HTTP keep-alive connections",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4328,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4328",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "28fba8ece93c",
+ "asked_at": "2026-11-04T01:42:39.943Z"
+}

@@ -12,8 +12,12 @@ Assignment 5 changes the task, not the control (checks/FORMATS.md, section 13):
     push_commit, merge_pr or close_issue runs as a read does, its "$fill"
     arguments filled by one model call. The comment still comes once, last, and the
     PR once, before it; steps between the PR and the comment run in order.
-  - Nothing here decides which calls need a person, holds a run, drains the inbox,
-    notifies anyone, or stops: that is Assignment 5's work, yours.
+  - Assignment 5's control, added here: the client drains the inbox before every
+    model call (Inboxed: a boundary becomes a rule in policy/rules.jsonl, anything
+    else goes on as the user's words); a "live" notification before the run's first
+    write; the disclosure line on the comment, in code (post); and the end of a run
+    the policy hook halts, held or stopped, after a checkpoint (halted). Which calls
+    need a person is decided by policy/hook.py, never here.
 
 Assignment 4's own account of the way follows.
 
@@ -111,8 +115,14 @@ from agent.diff import step_args
 from agent.plan import SCHEMA, make_plan, revise_plan
 from agent.validator import validate
 from harness.formats import FILL, format_triage_comment, parse_triage_comment, result_paths
-from harness.roles import ALL_ROLES, arg, tool_for
+from harness.inbox import drain
+from harness.notify import notify
+from harness.roles import ALL_ROLES, action_of, arg, tool_for
 from harness.schema import errors as schema_errors
+from policy import boundary, stops
+from policy.disclosure import disclose
+from policy.escalation import escalate
+from policy.placement import place
 from state.checkpointer import Checkpointer
 from state.store import REPOSITORY, Store
 from tools import Unverifiable
@@ -132,11 +142,18 @@ BURY = "PLANT_BURY"            # Part F, attention: put the fact first, under th
 COMPACT_AT = "REPOMIND_COMPACT_AT"   # Part F, compaction: compact the history past this many tokens
 KEEP = 1                       # turns a compaction keeps as they were
 SUMMARY = "## Summary of the earlier steps"
+DENIED = "This call was not allowed"   # the registry's reply to a call a hook refused
+BLOCKED_LIMIT = 3                     # Assignment 5: the same step refused this often escalates
 
 
 def role(name: str | None) -> str | None:
     """The role a step's tool plays, or None."""
     return next((r for r in ALL_ROLES if tool_for(r) == name), None)
+
+
+def unfilled(value) -> bool:
+    """Whether a value still holds the planner's "$fill", wherever it stands in it."""
+    return FILL in (value if isinstance(value, str) else json.dumps(value, default=str))
 
 
 def allows_null(spec: dict) -> bool:
@@ -161,10 +178,49 @@ class Recording:
         return getattr(self._client, name)
 
 
+class Inboxed:
+    """Assignment 5: the model client, draining the inbox before every model call (the
+    planner's, a fill's, a revision's, a critique's and a compaction's). A boundary is
+    parsed here, in the harness, into policy/rules.jsonl, and never reaches the model;
+    any other message goes on to the model as the user's words, in every later call."""
+
+    def __init__(self, client, ctx):
+        self._client, self._ctx = client, ctx
+        self.said: list[str] = []
+
+    def create(self, **request):
+        for message in drain(self._ctx):          # reads self.calls: the number of the call about to be made
+            if boundary.promote(message, self._ctx.run_id) is None:
+                self.said.append(str(message["text"]))
+        if self.said:
+            request["messages"] = self.with_words(request.get("messages") or [])
+        return self._client.create(**request)
+
+    def with_words(self, messages: list[dict]) -> list[dict]:
+        words = "## The user's messages to this run, in their words\n" + "\n".join(f"- {t}" for t in self.said)
+        messages = copy.deepcopy(messages)
+        last = next((m for m in reversed(messages) if m.get("role") == "user"), None)
+        if last is None:
+            return messages + [{"role": "user", "content": words}]
+        if isinstance(last.get("content"), str):
+            last["content"] += f"\n\n{words}"
+        else:
+            last["content"] = list(last.get("content") or []) + [{"type": "text", "text": words}]
+        return messages
+
+    def __getattr__(self, name):
+        return getattr(self._client, name)
+
+
 def run(ctx) -> None:
     conversation: list[dict] = []
+    ctx.client = Inboxed(ctx.client, ctx)
     if os.environ.get(CONVERSATION) == "1":
         ctx.client = Recording(ctx.client, conversation)
+    notify("live", ctx.run_id, f"RepoMind is running on issue {ctx.issue_number}; "   # before the run's first write
+           f"stop it with: bin/stop {ctx.run_id}", issue=ctx.issue_number)
+    if stops.lift(ctx.run_id):                    # only a resume finds its run stopped: the person lifts the stop
+        ctx.trace.event("stop_lifted", by="python run.py --resume")
     checkpointer = Checkpointer()
     last = checkpointer.last(ctx.run_id)
     memory = recall(ctx)
@@ -322,6 +378,7 @@ class Executor:
         self.compact_at = int(os.environ[COMPACT_AT]) if os.environ.get(COMPACT_AT) else None   # Part F
         self.summary: str | None = None  # the compaction's summary of the earliest turns, once there is one
         self.summarized = 0              # how many of the earliest turns it replaced
+        self.blocked: dict[str, int] = {}  # Assignment 5: hook refusals per plan step
         if restore is not None:
             self.restore(restore)
 
@@ -407,21 +464,127 @@ class Executor:
         args = self.filled(step, args)
         if args is None:
             return None
+        if role(tool) in ("push_commit", "merge_pr"):   # cannot be undone: check the named signals first
+            signal = self.tests_signal()
+            if signal is not None:
+                go = self.escalated(step, tool, args, *signal)
+                if go is None:
+                    return None
+                if not go:
+                    return self.record(step, args, None, "declined")
         result = self.call(step, tool, args)
         return None if result is None else self.record(step, args, result)
 
-    def call(self, step: dict, tool: str, args: dict):
-        """One tool call for a plan step; None when the registry could not confirm a
-        write, and the run has ended escalated (the third exit)."""
+    def call(self, step: dict, tool: str, args: dict, *, retried: bool = False):
+        """One tool call for a plan step; None when the run has ended: held or stopped by
+        the policy hook, or escalated when a write cannot be confirmed (the third exit)."""
         try:
-            return self.ctx.call_tool(self.calls, tool, args, plan_step=step.get("id"))
+            result = self.ctx.call_tool(self.calls, tool, args, plan_step=step.get("id"))
         except Unverifiable as exc:
-            self.record(step, args, None, "unverifiable")
-            self.ctx.trace.end("escalated", detail=f"step {step.get('id')}: {exc}; a person on review duty decides")
+            return self.unconfirmed(step, tool, args, exc, retried)
+        halt = getattr(self.ctx.tools, "halt", None)
+        if halt is not None:                      # the policy hook refused it, and the run ends here
+            self.halted(step, *halt)
             return None
+        if result.is_error and result.content.startswith(DENIED):
+            sid = str(step.get("id"))
+            self.blocked[sid] = self.blocked.get(sid, 0) + 1
+            if self.blocked[sid] == BLOCKED_LIMIT:
+                go = self.escalated(step, tool, args, "blocked_three_times",
+                                    f"the policy hook refused step {sid} ({tool}) {BLOCKED_LIMIT} times in this run",
+                                    "Let the run go on without this step (approve), or end the run here (deny)")
+                if go is None:
+                    return None
+                if not go:
+                    self.record(step, args, result)
+                    self.ctx.trace.end("escalated", detail=f"step {sid}: blocked {BLOCKED_LIMIT} times; declined")
+                    return None
+        return result
+
+    def unconfirmed(self, step: dict, tool: str, args: dict, exc: Exception, retried: bool):
+        """A write the registry cannot confirm: an uninterpretable result, so a person decides.
+        Approved, it is retried once with the same arguments, so the same key: the registry's
+        check before the attempt finds it if it happened."""
+        go = None if retried else self.escalated(
+            step, tool, args, "uninterpretable_result", f"the registry could not confirm the write: {exc}",
+            "Check the remote: retry the write with the same key (approve; never written twice), or end the "
+            "run for a person to finish (deny)")
+        if go:
+            return self.call(step, tool, args, retried=True)
+        if go is None and self.ctx.trace.ended:   # held or stopped: the step runs again on a resume
+            return None
+        self.record(step, args, None, "unverifiable")
+        self.ctx.trace.end("escalated", detail=f"step {step.get('id')}: {exc}; a person on review duty decides")
+        return None
+
+    # -- Assignment 5: escalation, on a signal the harness sets, before what cannot be undone ----------
+    def tests_signal(self) -> tuple[str, str, str] | None:
+        """failed_verification or uninterpretable_result, from this run's own latest run_tests
+        result, as the call record holds it: the harness's reading, never the model's."""
+        found = next((c for c in reversed(self.completed) if role(c.get("tool")) == "run_tests"
+                      and c.get("status") == "done"), None)
+        if found is None:
+            return None
+        try:
+            result = json.loads(found.get("result") or "")
+            passed, ref, failed = result["passed"], result.get("ref"), result.get("failed") or []
+            if not isinstance(passed, bool):
+                raise TypeError("passed is not true or false")
+        except (ValueError, KeyError, TypeError, AttributeError):
+            return ("uninterpretable_result", f"run_tests at step {found.get('step')} returned a result the harness "
+                    "cannot read, so whether the change works is unknown",
+                    "Push anyway (approve), or hold the push until the tests can be read (deny)")
+        if passed:
+            return None
+        return ("failed_verification", f"this run's own run_tests on {ref} (step {found.get('step')}) failed "
+                f"{len(failed)} test(s): {'; '.join(map(str, failed[:3]))}",
+                "Push the change anyway (approve), or leave the branch as it is for a person to revise the "
+                "change (deny)")
+
+    def memory_signal(self) -> tuple[str, str, str] | None:
+        """memory_contradiction: a confirmed record of this issue's triage names another file."""
+        for r in self.memory:
+            if r.get("issue") != self.ctx.issue_number or r.get("kind") != "episodic" or not r.get("confirmed"):
+                continue
+            named = re.search(r"file (\S+)\.$", str(r.get("text") or "").strip())
+            if named and named.group(1) != (self.drafted_file or "none"):
+                return ("memory_contradiction", f"the draft names {self.drafted_file}, and the store's confirmed "
+                        f"record {r.get('id')} says: {r.get('text')}",
+                        "Post the draft as it is (approve), or hold the comment for a person to settle which "
+                        "file it is (deny)")
+        return None
+
+    def escalated(self, step: dict, tool: str, args: dict, signal: str, why: str, needs: str) -> bool | None:
+        """Checkpoint, packet, ask (policy/escalation.py). True: the step goes ahead (it still
+        meets the policy hook); False: it does not; None: the run has ended held or stopped."""
+        self.save_state(step, current=step.get("id"))
+        action = action_of(tool)
+        facts = self.ctx.tracker.facts(self.ctx.run_id, action, args, self.ctx.issue_number)
+        klass, _ = place(action, facts)
+        answer = escalate(self.ctx, step=step.get("id"), signal=signal,
+                          attempted=f"step {step.get('id')}, {step.get('action')}: {action} with "
+                                    f"{json.dumps(args, sort_keys=True)}",
+                          why_stopped=why, needs_from_human=needs, action=action, action_class=klass,
+                          args=args, facts=facts)
+        if answer in ("held", "stopped"):
+            self.halted(step, answer, f"the escalation ({signal}) was "
+                                      + ("not answered before its timeout" if answer == "held" else "withdrawn by a stop"))
+            return None
+        return answer == "approve"
+
+    def halted(self, step: dict, reason: str, detail: str) -> None:
+        """Assignment 5: held (a person did not answer) or stopped (bin/stop). The refused
+        call is not recorded, so its step runs again on a resume; the checkpoint holds
+        every call that completed, with its key."""
+        step["status"] = "pending"
+        self.save_state(step, current=step.get("id"))
+        self.ctx.trace.end(reason, detail=f"step {step.get('id')}: {detail}; resume with "
+                                          f"python run.py --resume {self.ctx.run_id}")
 
     def filled(self, step: dict, args: dict) -> dict | None:
-        to_fill = [k for k, v in args.items() if str(v).startswith(FILL)]   # "$fill", or "$fill: a note"
+        # "$fill", "$fill: a note", or "$fill" inside a longer value, such as a body the
+        # planner wrote as "label: $fill\nfile: $fill" (Assignment 5, the day queue)
+        to_fill = [k for k, v in args.items() if unfilled(v)]
         if not to_fill:
             return args
         filled = self.fill(step, args, to_fill)
@@ -439,7 +602,7 @@ class Executor:
         schema = next((t for t in self.ctx.tools.schemas if t["name"] == step["tool"]), None)
         if schema is None:
             return None
-        fixed = {k: v for k, v in args.items() if not str(v).startswith(FILL)}
+        fixed = {k: v for k, v in args.items() if not unfilled(v)}
         props = (schema.get("input_schema") or {}).get("properties") or {}
         nullable = {k for k, s in props.items() if isinstance(s, dict) and allows_null(s)}
         for _ in range(MAX_FILL_TRIES):
@@ -452,7 +615,7 @@ class Executor:
                     self.refuse(step, call)       # the boundary: never run, always traced
                     continue
                 filled = {**{k: v for k, v in call.input.items() if k in props}, **fixed}   # the plan's values win
-                if any(k not in filled or filled[k] == "" or str(filled[k]).startswith(FILL)
+                if any(k not in filled or filled[k] == "" or unfilled(filled[k])
                        or (filled[k] is None and k not in nullable)
                        for k in keys):
                     continue
@@ -550,6 +713,9 @@ class Executor:
             error = "not_found" if "no such file" in text else "tool_error"
         if error is None and role(tool) == "search" and not count:
             error = "no_matches"
+            self.ctx.trace.event("not_determined", step=step.get("id"),   # Assignment 5: not a finding
+                                 question=f"which file a search for {args.get(arg('search', 'query'))!r} would have "
+                                          "named: it matched nothing, which does not show that no such file exists")
         status = "skipped" if error == "skipped" else "failed" if error else "done"
         entry = {"id": step.get("id"), "tool": tool, "status": status, "count": count,
                  "paths": paths, "error_code": error, "args": args}
@@ -618,12 +784,22 @@ class Executor:
         """Post the checked draft, the run's last write, behind a sync checkpoint. A
         resume posts the draft its checkpoint saved, never a new one. False when the
         run has ended."""
+        body = arg("comment", "body")
+        args = {**self.draft, body: disclose(self.draft[body])}   # Part D: in code, never in a prompt
+        signal = self.memory_signal()             # a comment cannot be taken back: check the named signal first
+        if signal is not None:
+            go = self.escalated(step, step["tool"], args, *signal)
+            if go is None:
+                return False
+            if not go:
+                self.record(step, args, None, "declined")
+                return True
         step["status"] = "running"
         self.save_state(step, current=step.get("id"))
-        result = self.call(step, step["tool"], self.draft)
+        result = self.call(step, step["tool"], args)
         if result is None:
             return False
-        self.record(step, self.draft, result)
+        self.record(step, args, result)
         return True
 
     # -- the label, before the pull request (Assignment 5) -------------------------------------------

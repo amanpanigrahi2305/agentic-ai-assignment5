@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4322-s01-16c9d4",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4322",
+  "branch": "repomind/issue-4322",
+  "title": "Add YAML key column to configuration reference for clarity",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4322,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4322",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "63573ada9a89",
+ "asked_at": "2026-11-04T01:34:23.558Z"
+}

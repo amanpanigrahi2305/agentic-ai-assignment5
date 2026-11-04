@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4307-s01-ba393b",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4307",
+  "branch": "repomind/issue-4307",
+  "title": "Fix health endpoint to report correct version in production",
+  "body": "File: src/api/health.ts\n\nThe health endpoint currently uses `process.env.npm_package_version` to determine the version, falling back to \"dev\" if it is not set. However, the service is started with `node dist/index.js` in production, which does not set this environment variable. This causes the endpoint to always report \"dev\" instead of the actual version (`3.2.1`).\n\nTo fix this, the version should be read directly from `package.json` at runtime or embedded during build time, ensuring the correct version is reported in production environments."
+ },
+ "facts": {
+  "issue": 4307,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4307",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "1d165f33a5a8",
+ "asked_at": "2026-11-04T01:11:25.318Z"
+}

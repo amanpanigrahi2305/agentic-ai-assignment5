@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4301-s01-ea62f0",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4301",
+  "branch": "repomind/issue-4301",
+  "title": "Fix connection closed unexpectedly during large XLSX export attachment sending",
+  "body": "File: src/export/scheduler.ts\n\nThe `runScheduledExport` function does not handle connection errors when sending large attachments (e.g., 38 MB XLSX files) via email. The `sendEmail` call in this function lacks retry logic or error handling for transient connection issues, causing the export to fail silently and leave the report due for the next tick without notifying the report owner. \n\nTo fix this, wrap the `sendEmail` call in a retry mechanism or add explicit error handling to catch connection-related errors (e.g., `Connection closed unexpectedly`) and notify the report owner or log a more descriptive error message. This ensures the report owner is informed of failures and prevents repeated attempts without feedback."
+ },
+ "facts": {
+  "issue": 4301,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4301",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "614a83c0a9e8",
+ "asked_at": "2026-11-04T01:01:21.512Z"
+}

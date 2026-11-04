@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4324-s01-077d7a",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4324",
+  "branch": "repomind/issue-4324",
+  "title": "Fix Safari export failure: file not downloaded despite success message",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4324,
+  "issue_opened_by_agent": false,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4324",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "1a16ec081807",
+ "asked_at": "2026-11-04T01:40:31.204Z"
+}

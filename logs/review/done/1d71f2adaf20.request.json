@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4312-s01-2af384",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4312",
+  "branch": "repomind/issue-4312",
+  "title": "Update ARCHITECTURE.md to include the hourly purge timer in the summary",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4312,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4312",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "1d71f2adaf20",
+ "asked_at": "2026-11-04T01:16:51.982Z"
+}

@@ -1,0 +1,25 @@
+{
+ "run_id": "planned-4309-s01-dbfc7f",
+ "action": "open_pr",
+ "action_class": "open_pr/into_develop",
+ "args": {
+  "issue": "issue-4309",
+  "branch": "repomind/issue-4309",
+  "title": "Return 400 for invalid JSON in POST /reports instead of 500",
+  "body": "File: $fill\n\n$fill"
+ },
+ "facts": {
+  "issue": 4309,
+  "issue_opened_by_agent": true,
+  "minutes_since_human_comment": null,
+  "label": null,
+  "branch": "repomind/issue-4309",
+  "branch_protected": false,
+  "base": "develop",
+  "target_created_by_agent": true,
+  "paths": []
+ },
+ "kind": "approval",
+ "request_id": "789e77022f39",
+ "asked_at": "2026-11-04T01:13:13.329Z"
+}
